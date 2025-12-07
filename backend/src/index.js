@@ -13,6 +13,7 @@ const corsOptions = {
     // - Localhost (development)
     // - Any origin with this header (useful for testing)
     const allowedOrigins = [
+      "https://tru-estate-pi.vercel.app",
       "https://truestate-giri.vercel.app",
       "https://truestate.vercel.app",
       "http://localhost:5173",
