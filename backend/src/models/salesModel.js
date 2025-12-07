@@ -38,7 +38,9 @@ export function loadSalesData() {
           Product_Name: row["Product Name"],
           Brand: row["Brand"],
           Product_Category: row["Product Category"],
-          Tags: row["Tags"] ? row["Tags"].split(",").map(t => t.trim().toLowerCase()) : [],
+          Tags: row["Tags"]
+            ? row["Tags"].split(",").map((t) => t.trim().toLowerCase())
+            : [],
 
           // --- SALES FIELDS ---
           Quantity: Number(row["Quantity"] || 0),
