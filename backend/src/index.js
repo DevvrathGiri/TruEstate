@@ -4,7 +4,15 @@ import { loadSalesData } from "./models/salesModel.js";
 import salesRoutes from "./routes/salesRoutes.js";
 
 const app = express();
-app.use(cors());
+
+// CORS configuration for Vercel and localhost
+app.use(cors({
+  origin: ["https://truestate-giri.vercel.app", "http://localhost:5173", "http://localhost:3000"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type"]
+}));
+
 app.use(express.json());
 
 // Load CSV before server starts
