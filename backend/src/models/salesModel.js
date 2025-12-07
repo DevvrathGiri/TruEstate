@@ -136,3 +136,8 @@ async function loadFromLocalFile() {
       .on("error", (err) => reject(err));
   });
 }
+
+// Getter
+export function getAllSales() {
+  return salesData;
+}
