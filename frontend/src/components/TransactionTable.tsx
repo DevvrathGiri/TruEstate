@@ -1,5 +1,3 @@
-
-
 export type TransactionRow = {
   Transaction_ID: string;
   Date: string;

@@ -50,8 +50,7 @@ export default function SalesPage() {
     pageSize: 10,
   });
 
-  const resetPage = () =>
-    setPagination((prev) => ({ ...prev, page: 1 }));
+  const resetPage = () => setPagination((prev) => ({ ...prev, page: 1 }));
 
   const fixFilters = (next: Filters) => {
     if (
@@ -101,7 +100,6 @@ export default function SalesPage() {
 
       {/* ⭐ Figma-style Toolbar */}
       <div className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 flex flex-wrap items-center gap-3 shadow-sm">
-
         {/* Refresh Icon */}
         <button
           className="p-2 rounded-md hover:bg-gray-100 border border-gray-200 text-gray-600"

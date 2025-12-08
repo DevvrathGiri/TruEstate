@@ -31,7 +31,6 @@ export default function FilterPanel({
   allTags = ["wireless", "organic", "fashion"],
   allPayments = ["cash", "card", "upi"],
 }: Props) {
-  
   const update = (patch: Partial<Filters>) => {
     let next = { ...value, ...patch };
 
@@ -49,7 +48,6 @@ export default function FilterPanel({
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-
       {/* Customer Region */}
       <MultiSelectDropdown
         label="Customer Region"

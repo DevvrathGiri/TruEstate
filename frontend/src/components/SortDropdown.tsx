@@ -48,14 +48,18 @@ export default function SortDropdown({ value, onChange }: Props) {
         className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-md shadow-sm text-sm hover:shadow-md"
       >
         Sort by: <span className="font-medium">{activeLabel}</span>
-
         <svg
           className="w-4 h-4 text-gray-500"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          <path
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 

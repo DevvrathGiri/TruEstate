@@ -1,10 +1,8 @@
-
-
 export type SummaryData = {
   totalUnits: number;
   totalAmount: number;
   totalDiscount: number;
-  salesCountForAmount?: number;   // e.g. "19 SRs"
+  salesCountForAmount?: number; // e.g. "19 SRs"
   salesCountForDiscount?: number; // e.g. "45 SRs"
 };
 
