@@ -126,7 +126,6 @@ export default function SalesPage() {
 
         {/* Filters */}
         <FilterPanel
-          layout="inline"
           value={filters}
           onChange={(next) => {
             setFilters(fixFilters(next));
