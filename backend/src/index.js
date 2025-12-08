@@ -1,17 +1,26 @@
 import express from "express";
 import cors from "cors";
-import { loadSalesData } from "./models/salesModel.js";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 import salesRoutes from "./routes/salesRoutes.js";
+
+dotenv.config(); // Load .env file
 
 const app = express();
 
-// CORS configuration - allow all origins for now (can be restricted later)
+// ----------------------------
+// 🔗 1. Connect to MongoDB
+// ----------------------------
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("📦 MongoDB Connected"))
+  .catch((err) => console.log("❌ MongoDB Error:", err));
+
+// ----------------------------
+// 🌐 2. CORS Setup
+// ----------------------------
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests from:
-    // - Vercel deployments
-    // - Localhost (development)
-    // - Any origin with this header (useful for testing)
     const allowedOrigins = [
       "https://tru-estate-pi.vercel.app",
       "https://truestate-giri.vercel.app",
@@ -21,13 +30,11 @@ const corsOptions = {
       "http://localhost:4000",
     ];
 
-    // Allow if origin is in whitelist or if no origin provided (same-origin requests)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      // For development, log but still allow
       console.log("CORS request from:", origin);
-      callback(null, true); // Allow all for now
+      callback(null, true);
     }
   },
   credentials: true,
@@ -39,18 +46,22 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Load CSV before server starts
-await loadSalesData();
-
-// Health check route
+// ----------------------------
+// ❤️ 3. Health Route
+// ----------------------------
 app.get("/health", (req, res) => {
   res.json({ status: "OK" });
 });
 
-// Mount API routes
+// ----------------------------
+// 📌 4. API Routes
+// ----------------------------
 app.use("/api", salesRoutes);
 
+// ----------------------------
+// 🚀 5. Start Server
+// ----------------------------
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });

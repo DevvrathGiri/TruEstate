@@ -1,5 +1,3 @@
-
-
 type Props = {
   page: number;
   totalPages: number;
@@ -11,45 +9,44 @@ export default function PaginationControls({
   totalPages,
   onChangePage,
 }: Props) {
-  const prevDisabled = page <= 1;
-  const nextDisabled = page >= totalPages;
+  const maxButtons = 6;
+
+  const getPageNumbers = () => {
+    const pages = [];
+
+    let start = Math.max(1, page - 2);
+    let end = Math.min(totalPages, start + maxButtons - 1);
+
+    if (end - start < maxButtons - 1) {
+      start = Math.max(1, end - maxButtons + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  };
 
   return (
-    <div className="w-full flex items-center justify-center gap-4 py-4">
-      {/* PREV BUTTON */}
-      <button
-        disabled={prevDisabled}
-        onClick={() => !prevDisabled && onChangePage(page - 1)}
-        className={`px-4 py-2 rounded-md border text-sm font-medium
-          ${
-            prevDisabled
-              ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
-              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-          }
-        `}
-      >
-        Prev
-      </button>
+    <div className="w-full flex items-center justify-center gap-2 py-4">
 
-      {/* PAGE INDICATOR */}
-      <div className="text-sm text-gray-600 font-medium">
-        {page} / {totalPages || 1}
-      </div>
+      {getPageNumbers().map((num) => (
+        <button
+          key={num}
+          onClick={() => onChangePage(num)}
+          className={`px-3 py-1.5 rounded-md border text-sm font-medium transition
+              ${
+                num === page
+                  ? "bg-black text-white border-black"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+              }
+          `}
+        >
+          {num}
+        </button>
+      ))}
 
-      {/* NEXT BUTTON */}
-      <button
-        disabled={nextDisabled}
-        onClick={() => !nextDisabled && onChangePage(page + 1)}
-        className={`px-4 py-2 rounded-md border text-sm font-medium
-          ${
-            nextDisabled
-              ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
-              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-          }
-        `}
-      >
-        Next
-      </button>
     </div>
   );
 }

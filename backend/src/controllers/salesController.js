@@ -1,8 +1,8 @@
 import { getSales } from "../services/salesService.js";
 
-export function getSalesController(req, res) {
+export async function getSalesController(req, res) {
   try {
-    const data = getSales(req.query);
+    const data = await getSales(req.query);  // correct: async service call
     res.json(data);
   } catch (err) {
     console.error("Error in salesController:", err);

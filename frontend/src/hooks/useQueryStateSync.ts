@@ -41,7 +41,9 @@ export function useQueryStateSync({
     const sortOrder = (p.get("sortOrder") as "asc" | "desc") || "desc";
     setSort({ sortBy, sortOrder });
 
-    // filters
+    // -------------------------
+    // FILTERS
+    // -------------------------
     setFilters({
       ...filters,
       regions: parseArray(p.get("regions")),
@@ -50,10 +52,11 @@ export function useQueryStateSync({
       tags: parseArray(p.get("tags")),
       paymentMethods: parseArray(p.get("paymentMethods")),
 
-      ageMin: parseNumber(p.get("ageMin")),
-      ageMax: parseNumber(p.get("ageMax")),
-      dateFrom: p.get("dateFrom"),
-      dateTo: p.get("dateTo"),
+      // UPDATED: Read ageRange from URL
+      ageRange: parseArray(p.get("ageRange")).map((n) => Number(n)),
+
+      // UPDATED: Read dateRange from URL
+      dateRange: parseArray(p.get("dateRange")),
     });
   }, []);
 
@@ -90,11 +93,13 @@ export function useQueryStateSync({
     if (filters.paymentMethods.length)
       q.set("paymentMethods", filters.paymentMethods.join(","));
 
-    if (filters.ageMin !== null) q.set("ageMin", String(filters.ageMin));
-    if (filters.ageMax !== null) q.set("ageMax", String(filters.ageMax));
+    // UPDATED: Write ageRange → URL
+    if (filters.ageRange.length === 2)
+      q.set("ageRange", filters.ageRange.join(","));
 
-    if (filters.dateFrom) q.set("dateFrom", filters.dateFrom);
-    if (filters.dateTo) q.set("dateTo", filters.dateTo);
+    // UPDATED: Write dateRange → URL
+    if (filters.dateRange.length === 2)
+      q.set("dateRange", filters.dateRange.join(","));
 
     setParams(q);
   }, [search, filters, sort, pagination]);
