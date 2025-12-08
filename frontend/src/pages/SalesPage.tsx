@@ -53,7 +53,7 @@ export default function SalesPage() {
     async function fetchData() {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:4000/api/sales");
+        const res = await fetch("https://truestate-yg49.onrender.com/api/sales");
         const json = await res.json();
 
         // Backend returns { data: [...] }
