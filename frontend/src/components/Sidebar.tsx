@@ -36,10 +36,9 @@ const navigationItems: NavItem[] = [
     icon: <Clock size={20} className="text-gray-600" />,
   },
   {
-   id: "services",
-  label: "Services",
-  icon: <Briefcase size={20} className="text-gray-600" />,
-  className: "text-blue-700 font-semibold",
+    id: "services",
+    label: "Services",
+    icon: <Briefcase size={20} className="text-gray-600" />,
     subItems: [
       {
         id: "pre-active",
@@ -170,7 +169,7 @@ export default function Sidebar() {
         </button>
 
         {/* SUB ITEMS */}
-        {isParent && isOpen && (
+        {isParent && isOpen && item.subItems && (
           <div className="mt-2 space-y-1 pl-10">
             {item.subItems.map((subItem) => (
               <button
