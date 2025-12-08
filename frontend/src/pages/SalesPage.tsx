@@ -1,7 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import PaginationControls from "../components/PaginationControls";
 import SalesTable from "../components/SalesTable";
-import { useSalesQuery } from "../hooks/useSalesQuery";
 
 import FilterPanel from "../components/FilterPanel";
 import type { Filters } from "../components/FilterPanel";
@@ -13,18 +12,11 @@ import Toast from "../components/Toast";
 import { useToast } from "../hooks/useToast";
 import Header from "../components/Header";
 
-type SortState = {
-  sortBy: string;
-  sortOrder: "asc" | "desc";
-};
-
-type PaginationState = {
-  page: number;
-  pageSize: number;
-};
-
 export default function SalesPage() {
   const { message, show } = useToast();
+
+  const [allData, setAllData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [search, setSearch] = useState("");
 
@@ -38,12 +30,12 @@ export default function SalesPage() {
     dateRange: [],
   });
 
-  const [sort, setSort] = useState<SortState>({
-    sortBy: "customerName",
-    sortOrder: "asc",
+  const [sort, setSort] = useState({
+    sortBy: "",
+    sortOrder: "asc" as "asc" | "desc",
   });
 
-  const [pagination, setPagination] = useState<PaginationState>({
+  const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 10,
   });
@@ -54,26 +46,87 @@ export default function SalesPage() {
       page: 1,
     }));
 
-  const queryParams = useMemo(() => {
-    return {
-      search,
-      regions: filters.regions,
-      genders: filters.genders,
-      categories: filters.categories,
-      tags: filters.tags,
-      paymentMethods: filters.paymentMethods,
-      ageRange: filters.ageRange,
-      dateRange: filters.dateRange,
-      sortBy: sort.sortBy,
-      sortOrder: sort.sortOrder,
-      page: pagination.page,
-      pageSize: pagination.pageSize,
-    };
-  }, [search, filters, sort, pagination]);
+  // ------------------------------
+  // 🔥 SIMPLE API CALL (NO PARAMS)
+  // ------------------------------
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const res = await fetch("http://localhost:4000/api/sales");
+        const json = await res.json();
 
-  const { data, loading, error } = useSalesQuery(queryParams);
+        // Backend returns { data: [...] }
+        setAllData(json.data || []);
+      } catch (err) {
+        console.error(err);
+        show("Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  if (error) show("Failed to fetch data. Please try again.");
+    fetchData();
+  }, []);
+
+  // ------------------------------------
+  // 🔥 FRONTEND FILTER + SEARCH + SORT
+  // ------------------------------------
+  const processedData = useMemo(() => {
+    let rows = [...allData];
+
+    // SEARCH
+    if (search.trim()) {
+      const s = search.toLowerCase();
+      rows = rows.filter(
+        (r) =>
+          r.Customer_Name?.toLowerCase().includes(s) ||
+          r.Product_Name?.toLowerCase().includes(s)
+      );
+    }
+
+    // REGION FILTER
+    if (filters.regions.length > 0) {
+      rows = rows.filter((r) => filters.regions.includes(r.Customer_Region));
+    }
+
+    // GENDER FILTER
+    if (filters.genders.length > 0) {
+      rows = rows.filter((r) => filters.genders.includes(r.Gender));
+    }
+
+    // CATEGORY FILTER
+    if (filters.categories.length > 0) {
+      rows = rows.filter((r) =>
+        filters.categories.includes(r.Product_Category)
+      );
+    }
+
+    // SORT
+    if (sort.sortBy) {
+      rows.sort((a, b) => {
+        const A = a[sort.sortBy];
+        const B = b[sort.sortBy];
+
+        if (A < B) return sort.sortOrder === "asc" ? -1 : 1;
+        if (A > B) return sort.sortOrder === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return rows;
+  }, [allData, search, filters, sort]);
+
+  // ------------------------------
+  // 🔥 PAGINATION (FRONTEND)
+  // ------------------------------
+  const currentRows = useMemo(() => {
+    const start = (pagination.page - 1) * pagination.pageSize;
+    const end = start + pagination.pageSize;
+    return processedData.slice(start, end);
+  }, [processedData, pagination]);
+
+  const totalPages = Math.ceil(processedData.length / pagination.pageSize);
 
   return (
     <div className="flex-1 flex flex-col h-screen overflow-hidden">
@@ -90,7 +143,7 @@ export default function SalesPage() {
         <div className="p-6 flex flex-col gap-4">
           <Toast message={message} />
 
-          {/* ======= FILTER TOOLBAR (Masal.ai exact layout) ======= */}
+          {/* Filter Toolbar */}
           <div className="w-full flex justify-start px-1">
             <div
               className="
@@ -103,7 +156,6 @@ export default function SalesPage() {
                 max-w-fit
               "
             >
-              {/* Filters */}
               <FilterPanel
                 value={filters}
                 onChange={(next) => {
@@ -117,7 +169,6 @@ export default function SalesPage() {
                 allPayments={["cash", "card", "upi"]}
               />
 
-              {/* Sort - placed immediately after filters */}
               <SortDropdown
                 value={sort}
                 onChange={(next) => {
@@ -128,40 +179,22 @@ export default function SalesPage() {
             </div>
           </div>
 
-          {/* Summary Cards */}
-          {data && (
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm px-4 py-4">
-              <SummaryCards
-                data={{
-                  totalUnits: data.totalUnits ?? 0,
-                  totalAmount: data.totalAmount ?? 0,
-                  totalDiscount: data.totalDiscount ?? 0,
-                  salesCountForAmount: data.numSalesForAmount,
-                  salesCountForDiscount: data.numSalesForDiscount,
-                }}
-              />
-            </div>
-          )}
-
-          {/* Loading */}
           {loading && <TableSkeleton />}
 
-          {/* No Results */}
-          {!loading && data && data.data.length === 0 && (
+          {!loading && currentRows.length === 0 && (
             <div className="text-center py-10 text-gray-500 text-lg">
               No results found. Try adjusting your filters.
             </div>
           )}
 
-          {/* Table */}
-          {!loading && data && data.data.length > 0 && (
+          {!loading && currentRows.length > 0 && (
             <>
-              <SalesTable rows={data.data} />
+              <SalesTable rows={currentRows} />
               <PaginationControls
-                page={data.page}
-                totalPages={data.totalPages}
-                onChangePage={(newPage) =>
-                  setPagination((prev) => ({ ...prev, page: newPage }))
+                page={pagination.page}
+                totalPages={totalPages}
+                onChangePage={(p) =>
+                  setPagination((prev) => ({ ...prev, page: p }))
                 }
               />
             </>

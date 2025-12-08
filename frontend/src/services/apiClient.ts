@@ -1,8 +1,9 @@
 import axios from "axios";
 
 // Base URL for backend API
-const API_BASE =
-  import.meta.env.VITE_API_BASE || "https://truestate-yg49.onrender.com/api";
+const API_BASE = "http://localhost:4000/api/sales";
+
+  // import.meta.env.VITE_API_BASE || "https://truestate-yg49.onrender.com/api"  ;
 
 console.log("API_BASE:", API_BASE);
 
