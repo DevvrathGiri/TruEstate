@@ -1,4 +1,3 @@
-import React from "react";
 import MultiSelectDropdown from "./MultiSelectDropdown";
 
 export type Filters = {

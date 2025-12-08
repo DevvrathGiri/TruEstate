@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export type SortState = {
   sortBy: string;
@@ -10,7 +10,9 @@ type Props = {
   onChange: (next: SortState) => void;
 };
 
-const OPTIONS = [
+type SortOption = SortState & { label: string };
+
+const OPTIONS: SortOption[] = [
   { label: "Date (Newest First)", sortBy: "date", sortOrder: "desc" },
   { label: "Quantity (Low → High)", sortBy: "quantity", sortOrder: "asc" },
   { label: "Quantity (High → Low)", sortBy: "quantity", sortOrder: "desc" },

@@ -18,9 +18,9 @@ const corsOptions = {
       "https://truestate.vercel.app",
       "http://localhost:5173",
       "http://localhost:3000",
-      "http://localhost:4000"
+      "http://localhost:4000",
     ];
-    
+
     // Allow if origin is in whitelist or if no origin provided (same-origin requests)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -33,7 +33,7 @@ const corsOptions = {
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
