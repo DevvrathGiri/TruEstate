@@ -2,8 +2,8 @@ export type SummaryData = {
   totalUnits: number;
   totalAmount: number;
   totalDiscount: number;
-  salesCountForAmount?: number; // e.g. "19 SRs"
-  salesCountForDiscount?: number; // e.g. "45 SRs"
+  salesCountForAmount?: number;
+  salesCountForDiscount?: number;
 };
 
 type Props = {
@@ -12,23 +12,28 @@ type Props = {
 
 export default function SummaryCards({ data }: Props) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
-      {/* TOTAL UNITS */}
-      <div className="p-4 bg-[#FAFAFA] rounded-lg border border-gray-200 shadow-sm">
-        <p className="text-gray-700 text-sm font-medium">Total units sold</p>
-        <p className="text-2xl font-bold mt-1 text-gray-900">
-          {data.totalUnits.toLocaleString("en-IN")}
+    <div className="flex items-center gap-6">
+
+      {/* CARD 1 */}
+      <div className="bg-white border border-gray-200 rounded-xl px-6 py-4 shadow-sm min-w-[220px]">
+        <div className="flex items-center justify-between">
+          <p className="text-gray-700 text-sm font-medium">Total units sold</p>
+          <span className="text-gray-400 text-sm">ⓘ</span>
+        </div>
+        <p className="text-2xl font-bold text-gray-900 mt-2">
+          {data.totalUnits}
         </p>
       </div>
 
-      {/* TOTAL AMOUNT */}
-      <div className="p-4 bg-[#FAFAFA] rounded-lg border border-gray-200 shadow-sm">
-        <p className="text-gray-700 text-sm font-medium">Total Amount</p>
-
-        <p className="text-2xl font-bold mt-1 text-gray-900">
-          ₹ {data.totalAmount.toLocaleString("en-IN")}
+      {/* CARD 2 */}
+      <div className="bg-white border border-gray-200 rounded-xl px-6 py-4 shadow-sm min-w-[220px]">
+        <div className="flex items-center justify-between">
+          <p className="text-gray-700 text-sm font-medium">Total Amount</p>
+          <span className="text-gray-400 text-sm">ⓘ</span>
+        </div>
+        <p className="text-2xl font-bold text-gray-900 mt-2">
+          ₹{data.totalAmount.toLocaleString("en-IN")}
         </p>
-
         {data.salesCountForAmount !== undefined && (
           <p className="text-gray-500 text-xs mt-1">
             ({data.salesCountForAmount} SRs)
@@ -36,20 +41,22 @@ export default function SummaryCards({ data }: Props) {
         )}
       </div>
 
-      {/* TOTAL DISCOUNT */}
-      <div className="p-4 bg-[#FAFAFA] rounded-lg border border-gray-200 shadow-sm">
-        <p className="text-gray-700 text-sm font-medium">Total Discount</p>
-
-        <p className="text-2xl font-bold mt-1 text-gray-900">
-          ₹ {data.totalDiscount.toLocaleString("en-IN")}
+      {/* CARD 3 */}
+      <div className="bg-white border border-gray-200 rounded-xl px-6 py-4 shadow-sm min-w-[220px]">
+        <div className="flex items-center justify-between">
+          <p className="text-gray-700 text-sm font-medium">Total Discount</p>
+          <span className="text-gray-400 text-sm">ⓘ</span>
+        </div>
+        <p className="text-2xl font-bold text-gray-900 mt-2">
+          ₹{data.totalDiscount.toLocaleString("en-IN")}
         </p>
-
         {data.salesCountForDiscount !== undefined && (
           <p className="text-gray-500 text-xs mt-1">
             ({data.salesCountForDiscount} SRs)
           </p>
         )}
       </div>
+
     </div>
   );
 }

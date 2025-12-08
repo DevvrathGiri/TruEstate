@@ -13,10 +13,11 @@ type Props = {
 type SortOption = SortState & { label: string };
 
 const OPTIONS: SortOption[] = [
+    { label: "Customer Name (A–Z)", sortBy: "customerName", sortOrder: "asc" },
   { label: "Date (Newest First)", sortBy: "date", sortOrder: "desc" },
   { label: "Quantity (Low → High)", sortBy: "quantity", sortOrder: "asc" },
   { label: "Quantity (High → Low)", sortBy: "quantity", sortOrder: "desc" },
-  { label: "Customer Name (A–Z)", sortBy: "customerName", sortOrder: "asc" },
+
   { label: "Customer Name (Z–A)", sortBy: "customerName", sortOrder: "desc" },
 ];
 

@@ -6,10 +6,8 @@ export type Filters = {
   categories: string[];
   tags: string[];
   paymentMethods: string[];
-  ageMin: number | null;
-  ageMax: number | null;
-  dateFrom: string | null;
-  dateTo: string | null;
+  ageRange: string[];
+  dateRange: string[];
 };
 
 type Props = {
@@ -20,6 +18,8 @@ type Props = {
   allCategories?: string[];
   allTags?: string[];
   allPayments?: string[];
+  allAgeRanges?: string[];
+  allDateRanges?: string[];
 };
 
 export default function FilterPanel({
@@ -30,20 +30,11 @@ export default function FilterPanel({
   allCategories = ["Electronics", "Beauty", "Clothing"],
   allTags = ["wireless", "organic", "fashion"],
   allPayments = ["cash", "card", "upi"],
+  allAgeRanges = ["18-25", "26-35", "36-45", "46-55", "56-65", "65+"],
+  allDateRanges = ["Last 7 days", "Last 30 days", "Last 90 days", "Last year"],
 }: Props) {
   const update = (patch: Partial<Filters>) => {
-    let next = { ...value, ...patch };
-
-    // Auto-swap incorrect age range
-    if (
-      next.ageMin !== null &&
-      next.ageMax !== null &&
-      next.ageMin > next.ageMax
-    ) {
-      next = { ...next, ageMin: next.ageMax, ageMax: next.ageMin };
-    }
-
-    onChange(next);
+    onChange({ ...value, ...patch });
   };
 
   return (
@@ -54,7 +45,7 @@ export default function FilterPanel({
         options={allRegions}
         selected={value.regions}
         onChange={(s) => update({ regions: s })}
-        placeholder="All"
+        placeholder=""
       />
 
       {/* Gender */}
@@ -63,41 +54,17 @@ export default function FilterPanel({
         options={allGenders}
         selected={value.genders}
         onChange={(s) => update({ genders: s })}
-        placeholder="All"
+        placeholder=""
       />
 
       {/* Age Range */}
-      <div className="flex items-center gap-2 bg-gray-100 border border-gray-300 rounded-md px-3 py-1.5">
-        <span className="text-sm text-gray-700">Age</span>
-
-        <input
-          type="number"
-          min={0}
-          placeholder="Min"
-          value={value.ageMin ?? ""}
-          onChange={(e) =>
-            update({
-              ageMin: e.target.value === "" ? null : Number(e.target.value),
-            })
-          }
-          className="w-14 px-2 py-0.5 rounded border border-gray-300 bg-white text-sm"
-        />
-
-        <span className="text-gray-500">-</span>
-
-        <input
-          type="number"
-          min={0}
-          placeholder="Max"
-          value={value.ageMax ?? ""}
-          onChange={(e) =>
-            update({
-              ageMax: e.target.value === "" ? null : Number(e.target.value),
-            })
-          }
-          className="w-14 px-2 py-0.5 rounded border border-gray-300 bg-white text-sm"
-        />
-      </div>
+      <MultiSelectDropdown
+        label="Age Range"
+        options={allAgeRanges}
+        selected={value.ageRange}
+        onChange={(s) => update({ ageRange: s })}
+        placeholder=""
+      />
 
       {/* Product Category */}
       <MultiSelectDropdown
@@ -105,7 +72,7 @@ export default function FilterPanel({
         options={allCategories}
         selected={value.categories}
         onChange={(s) => update({ categories: s })}
-        placeholder="All"
+        placeholder=""
       />
 
       {/* Tags */}
@@ -114,7 +81,7 @@ export default function FilterPanel({
         options={allTags}
         selected={value.tags}
         onChange={(s) => update({ tags: s })}
-        placeholder="All"
+        placeholder=""
       />
 
       {/* Payment Method */}
@@ -123,29 +90,17 @@ export default function FilterPanel({
         options={allPayments}
         selected={value.paymentMethods}
         onChange={(s) => update({ paymentMethods: s })}
-        placeholder="All"
+        placeholder=""
       />
 
       {/* Date Range */}
-      <div className="flex items-center gap-2 bg-gray-100 border border-gray-300 rounded-md px-3 py-1.5">
-        <span className="text-sm text-gray-700">Date</span>
-
-        <input
-          type="date"
-          value={value.dateFrom ?? ""}
-          onChange={(e) => update({ dateFrom: e.target.value || null })}
-          className="px-2 py-0.5 rounded border border-gray-300 bg-white text-sm"
-        />
-
-        <span className="text-gray-500">-</span>
-
-        <input
-          type="date"
-          value={value.dateTo ?? ""}
-          onChange={(e) => update({ dateTo: e.target.value || null })}
-          className="px-2 py-0.5 rounded border border-gray-300 bg-white text-sm"
-        />
-      </div>
+      <MultiSelectDropdown
+        label="Date"
+        options={allDateRanges}
+        selected={value.dateRange}
+        onChange={(s) => update({ dateRange: s })}
+        placeholder=""
+      />
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import SearchBar from "../components/SearchBar";
 import PaginationControls from "../components/PaginationControls";
 import SalesTable from "../components/SalesTable";
 import { useSalesQuery } from "../hooks/useSalesQuery";
@@ -12,6 +11,7 @@ import SummaryCards from "../components/SummaryCards";
 import TableSkeleton from "../components/TableSkeleton";
 import Toast from "../components/Toast";
 import { useToast } from "../hooks/useToast";
+import Header from "../components/Header";
 
 type SortState = {
   sortBy: string;
@@ -34,15 +34,13 @@ export default function SalesPage() {
     categories: [],
     tags: [],
     paymentMethods: [],
-    ageMin: null,
-    ageMax: null,
-    dateFrom: null,
-    dateTo: null,
+    ageRange: [],
+    dateRange: [],
   });
 
   const [sort, setSort] = useState<SortState>({
-    sortBy: "date",
-    sortOrder: "desc",
+    sortBy: "customerName",
+    sortOrder: "asc",
   });
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -50,22 +48,11 @@ export default function SalesPage() {
     pageSize: 10,
   });
 
-  const resetPage = () => setPagination((prev) => ({ ...prev, page: 1 }));
-
-  const fixFilters = (next: Filters) => {
-    if (
-      next.ageMin !== null &&
-      next.ageMax !== null &&
-      next.ageMin > next.ageMax
-    ) {
-      return {
-        ...next,
-        ageMin: next.ageMax,
-        ageMax: next.ageMin,
-      };
-    }
-    return next;
-  };
+  const resetPage = () =>
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+    }));
 
   const queryParams = useMemo(() => {
     return {
@@ -75,10 +62,8 @@ export default function SalesPage() {
       categories: filters.categories,
       tags: filters.tags,
       paymentMethods: filters.paymentMethods,
-      ageMin: filters.ageMin,
-      ageMax: filters.ageMax,
-      dateFrom: filters.dateFrom,
-      dateTo: filters.dateTo,
+      ageRange: filters.ageRange,
+      dateRange: filters.dateRange,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
       page: pagination.page,
@@ -91,108 +76,98 @@ export default function SalesPage() {
   if (error) show("Failed to fetch data. Please try again.");
 
   return (
-    <div className="p-6 flex flex-col gap-6">
-      <Toast message={message} />
+    <div className="flex-1 flex flex-col h-screen overflow-hidden">
+      <Header
+        title="Sales Management System"
+        searchValue={search}
+        onSearchChange={(v) => {
+          setSearch(v);
+          resetPage();
+        }}
+      />
 
-      <h1 className="text-2xl font-semibold text-gray-900">
-        Sales Management System
-      </h1>
+      <div className="flex-1 overflow-auto">
+        <div className="p-6 flex flex-col gap-4">
+          <Toast message={message} />
 
-      {/* ⭐ Figma-style Toolbar */}
-      <div className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 flex flex-wrap items-center gap-3 shadow-sm">
-        {/* Refresh Icon */}
-        <button
-          className="p-2 rounded-md hover:bg-gray-100 border border-gray-200 text-gray-600"
-          onClick={() => {
-            setFilters({
-              regions: [],
-              genders: [],
-              categories: [],
-              tags: [],
-              paymentMethods: [],
-              ageMin: null,
-              ageMax: null,
-              dateFrom: null,
-              dateTo: null,
-            });
-            setSearch("");
-            resetPage();
-          }}
-        >
-          🔄
-        </button>
+          {/* ======= FILTER TOOLBAR (Masal.ai exact layout) ======= */}
+          <div className="w-full flex justify-start px-1">
+            <div
+              className="
+                bg-white
+                border border-gray-200
+                rounded-xl
+                shadow-sm
+                px-4 py-3
+                flex flex-wrap items-center gap-3
+                max-w-fit
+              "
+            >
+              {/* Filters */}
+              <FilterPanel
+                value={filters}
+                onChange={(next) => {
+                  setFilters(next);
+                  resetPage();
+                }}
+                allRegions={["North", "South", "East", "West"]}
+                allGenders={["Male", "Female"]}
+                allCategories={["Clothing", "Electronics", "Beauty", "Home"]}
+                allTags={["wireless", "organic", "portable"]}
+                allPayments={["cash", "card", "upi"]}
+              />
 
-        {/* Filters */}
-        <FilterPanel
-          value={filters}
-          onChange={(next) => {
-            setFilters(fixFilters(next));
-            resetPage();
-          }}
-          allRegions={["North", "South", "East", "West"]}
-          allGenders={["Male", "Female"]}
-          allCategories={["Clothing", "Electronics", "Beauty", "Home"]}
-          allTags={["wireless", "organic", "portable"]}
-          allPayments={["cash", "card", "upi"]}
-        />
+              {/* Sort - placed immediately after filters */}
+              <SortDropdown
+                value={sort}
+                onChange={(next) => {
+                  setSort(next);
+                  resetPage();
+                }}
+              />
+            </div>
+          </div>
 
-        {/* Sort Dropdown */}
-        <SortDropdown
-          value={sort}
-          onChange={(next) => {
-            setSort(next);
-            resetPage();
-          }}
-        />
+          {/* Summary Cards */}
+          {data && (
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm px-4 py-4">
+              <SummaryCards
+                data={{
+                  totalUnits: data.totalUnits ?? 0,
+                  totalAmount: data.totalAmount ?? 0,
+                  totalDiscount: data.totalDiscount ?? 0,
+                  salesCountForAmount: data.numSalesForAmount,
+                  salesCountForDiscount: data.numSalesForDiscount,
+                }}
+              />
+            </div>
+          )}
 
-        {/* Search Bar (right aligned) */}
-        <div className="ml-auto">
-          <SearchBar
-            value={search}
-            onChange={(v) => {
-              setSearch(v);
-              resetPage();
-            }}
-          />
+          {/* Loading */}
+          {loading && <TableSkeleton />}
+
+          {/* No Results */}
+          {!loading && data && data.data.length === 0 && (
+            <div className="text-center py-10 text-gray-500 text-lg">
+              No results found. Try adjusting your filters.
+            </div>
+          )}
+
+          {/* Table */}
+          {!loading && data && data.data.length > 0 && (
+            <>
+              <SalesTable rows={data.data} />
+              <PaginationControls
+                page={data.page}
+                totalPages={data.totalPages}
+                onChangePage={(newPage) =>
+                  setPagination((prev) => ({ ...prev, page: newPage }))
+                }
+              />
+            </>
+          )}
         </div>
       </div>
-
-      {/* Summary Cards */}
-      {data && (
-        <SummaryCards
-          data={{
-            totalUnits: data.totalUnits ?? 0,
-            totalAmount: data.totalAmount ?? 0,
-            totalDiscount: data.totalDiscount ?? 0,
-            salesCountForAmount: data.numSalesForAmount,
-            salesCountForDiscount: data.numSalesForDiscount,
-          }}
-        />
-      )}
-
-      {/* Loading */}
-      {loading && <TableSkeleton />}
-
-      {/* No Results */}
-      {!loading && data && data.data.length === 0 && (
-        <div className="text-center py-10 text-gray-500 text-lg">
-          No results found. Try adjusting your filters.
-        </div>
-      )}
-
-      {/* Table */}
-      {!loading && data && data.data.length > 0 && (
-        <>
-          <SalesTable rows={data.data} />
-          <PaginationControls
-            page={data.page}
-            totalPages={data.totalPages}
-            onChangePage={(newPage) =>
-              setPagination((prev) => ({ ...prev, page: newPage }))
-            }
-          />
-        </>
-      )}
     </div>
   );
 }
