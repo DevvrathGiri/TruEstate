@@ -67,8 +67,6 @@ The TruEstate backend is a high-performance REST API built with Node.js, Express
     "pagination": {
       "page": 1,
       "limit": 20,
-      "totalCount": 240,
-      "totalPages": 12
     }
   }
   ```
@@ -99,3 +97,4 @@ The backend will run at:
 ```
 http://localhost:4000
 ```
+
