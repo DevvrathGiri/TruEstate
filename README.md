@@ -61,8 +61,6 @@ TruEstate is a full-stack sales management dashboard built to efficiently handle
     "pagination": {
       "page": 1,
       "limit": 20,
-      "totalPages": 12,
-      "totalCount": 240
     }
   }
   ```
@@ -103,3 +101,4 @@ Create `.env`:
 ```
 VITE_API_BASE=http://localhost:4000/api
 ```
+
