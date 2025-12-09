@@ -1,73 +1,132 @@
-# React + TypeScript + Vite
+🚀 TruEstate Frontend (React + Vite)
+📌 1. Overview (3–5 lines)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The TruEstate frontend is a fast, responsive, and user-friendly dashboard built using React + Vite.
+It provides seamless search, filter, sort, and pagination interactions for large sales datasets.
+Optimized API calls, a modular component architecture, and polished UI elements ensure a smooth user experience.
 
-Currently, two official plugins are available:
+🧰 2. Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+React (Vite)
 
-## React Compiler
+JavaScript / TypeScript
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+TailwindCSS
 
-## Expanding the ESLint configuration
+Axios
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+React Hooks (useState, useEffect, useMemo, custom hooks)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Vercel Deployment
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+🔍 3. Search Implementation Summary
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+The search bar uses a debounced input to reduce unnecessary API calls.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+User input dynamically updates the query and triggers a request to:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+GET /sales?search=<query>
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+
+The backend performs case-insensitive matching, and results update instantly.
+
+Works smoothly alongside filters, sorting, and pagination.
+
+🎛 4. Filter Implementation Summary
+
+Filters available:
+
+Date range
+
+Payment status
+
+Amount range
+
+Property type
+
+Agent / Project
+
+Implementation:
+
+Filters are managed inside FilterPanel and stored in state.
+
+Each change updates query parameters via useSalesQuery hook.
+
+Frontend sends filter values like:
+
+GET /sales?status=Paid&minAmount=1000&maxAmount=5000&from=2023-01-01&to=2023-02-01
+
+
+API response updates the table instantly.
+
+↕️ 5. Sorting Implementation Summary
+
+Sorting UI is handled by the SortDropdown component.
+
+Sort state includes:
+
+{ sortBy: "amount" | "date" | "name", sortOrder: "asc" | "desc" }
+
+
+Sent to backend as:
+
+GET /sales?sortBy=amount&sortOrder=desc
+
+
+Backend returns sorted results that reflect immediately in the table.
+
+📄 6. Pagination Implementation Summary
+
+Pagination uses a dedicated PaginationControls component.
+
+Users can move through pages (next, prev, or by page number).
+
+Query parameters sent:
+
+GET /sales?page=3&limit=20
+
+
+Backend provides:
+
+totalPages
+
+totalCount
+
+hasNext / hasPrev
+
+UI updates without full reload.
+
+🛠 7. Setup Instructions
+Install Dependencies
+cd frontend
+npm install
+
+Create Environment File
+
+Create ./frontend/.env:
+
+VITE_API_BASE=http://localhost:4000/api
+
+
+(If deployed: set production backend URL here.)
+
+Run Frontend
+npm run dev
+
+📂 Folder Structure (Optional but professional)
+frontend/
+│── src/
+│   ├── components/
+│   │   ├── PaginationControls.jsx
+│   │   ├── SortDropdown.jsx
+│   │   ├── FilterPanel.jsx
+│   │   └── SalesTable.jsx
+│   ├── hooks/
+│   │   └── useSalesQuery.js
+│   ├── utils/
+│   │   └── formatters.js
+│   ├── App.jsx
+│   └── main.jsx
+│── public/
+│── package.json
+│── vite.config.js
