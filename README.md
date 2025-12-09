@@ -1,127 +1,105 @@
-🚀 TruEstate — Full-Stack Sales Management System
-📌 1. Overview (3–5 lines)
+# TruEstate — Full-Stack Sales Management System
 
-TruEstate is a full-stack sales management dashboard built to efficiently handle large real-estate datasets with powerful search, filter, sorting, and pagination capabilities.
-It uses a React + Vite frontend and Node.js + Express + MongoDB backend.
-The system is optimized for fast, smooth data querying and provides a clean, intuitive UI for sales teams.
+## 1. Overview (3–5 lines)
 
-🧰 2. Tech Stack
-Frontend
+TruEstate is a full-stack sales management dashboard built to efficiently handle large real-estate datasets with powerful search, filter, sorting, and pagination capabilities. It uses a React + Vite frontend and Node.js + Express + MongoDB backend. The system is optimized for fast, smooth data querying and provides a clean, intuitive UI for sales teams.
 
-React (Vite)
+## 2. Tech Stack
 
-JavaScript / TypeScript
+**Frontend:**
+- React (Vite)
+- JavaScript / TypeScript
+- TailwindCSS
+- Axios
 
-TailwindCSS
+**Backend:**
+- Node.js
+- Express.js
 
-Axios
+**Database:**
+- MongoDB Atlas
 
-Backend
+**Deployment:**
+- Vercel → Frontend
+- Render → Backend
 
-Node.js
+## 3. Search Implementation Summary
 
-Express.js
+- Search field updates the query using debounced input
+- Frontend sends `?search=query` to backend
+- Backend uses case-insensitive MongoDB `$regex` on multiple fields
+- Results update instantly without reloading the page
 
-Database
+## 4. Filter Implementation Summary
 
-MongoDB Atlas
+**Filters supported:**
+- Date Range
+- Status
+- Amount Range
+- Property Type
+- Agent / Project filters
 
-Deployment
+**Backend internally uses:**
+- `$gte`, `$lte` for ranges
+- `$in` for multi-select filters
+- Dynamic query builder to combine multiple filters at once
 
-Vercel → Frontend
+## 5. Sorting Implementation Summary
 
-Render → Backend
+- UI sends `sortBy` + `sortOrder` to API
+- Backend applies `.sort({ field: 1 or -1 })`
+- Compatible with search + filters simultaneously
 
-🔍 3. Search Implementation Summary
+## 6. Pagination Implementation Summary
 
-Search field updates the query using debounced input.
-
-Frontend sends ?search=query to backend.
-
-Backend uses case-insensitive MongoDB $regex on multiple fields.
-
-Results update instantly without reloading the page.
-
-🎛 4. Filter Implementation Summary
-
-Filters supported:
-
-Date Range
-
-Status
-
-Amount Range
-
-Property Type
-
-Agent / Project filters
-
-Backend internally uses:
-
-$gte, $lte for ranges
-
-$in for multi-select filters
-
-Dynamic query builder to combine multiple filters at once
-
-↕️ 5. Sorting Implementation Summary
-
-UI sends sortBy + sortOrder to API
-
-Backend applies:
-
-.sort({ field: 1 or -1 })
-
-
-Compatible with search + filters simultaneously.
-
-📄 6. Pagination Implementation Summary
-
-Frontend uses page numbers + next/prev controls
-
-Backend calculates:
-
-skip = (page - 1) * limit
-
-
-Returns:
-
-{
-  "data": [...],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "totalPages": 12,
-    "totalCount": 240
+- Frontend uses page numbers + next/prev controls
+- Backend calculates: `skip = (page - 1) * limit`
+- Returns:
+  ```json
+  {
+    "data": [...],
+    "pagination": {
+      "page": 1,
+      "limit": 20,
+      "totalPages": 12,
+      "totalCount": 240
+    }
   }
-}
+  ```
 
-🛠 7. Setup Instructions
-Clone the project
+## 7. Setup Instructions
+
+**Clone the project:**
+```bash
 git clone <repo-url>
 cd project-folder
+```
 
-Backend Setup
+**Backend Setup:**
+```bash
 cd backend
 npm install
+```
 
-
-Create .env:
-
+Create `.env`:
+```
 MONGO_URI=your_mongodb_url
 PORT=4000
-
+```
 
 Run backend:
-
+```bash
 npm run dev
+```
 
-Frontend Setup
+**Frontend Setup:**
+```bash
 cd frontend
 npm install
 npm run dev
+```
 
-
-Create .env:
-
+Create `.env`:
+```
 VITE_API_BASE=http://localhost:4000/api
+```
